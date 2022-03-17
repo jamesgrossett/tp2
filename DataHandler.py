@@ -6,7 +6,7 @@ class TelemetryData():
         self.ErrorState = False
 
     def getInventory(self):
-        return randint(0, 100)
+        return self.Inventory
 
     def getErrorState(self):
         return self.ErrorState    
