@@ -1,3 +1,4 @@
+from random import randint
 import tkinter as tk
 import time
 
@@ -8,17 +9,19 @@ from DataHandler import TelemetryData
 class TelemetryUI(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        self.inventory = tk.Label(self, text='')
+        self.data = TelemetryData()
+        self.inventory = tk.Label(self, text='Inventory: ' + '0')
         self.inventory.pack()
 
-        self.update_clock()
+        self.update_values()
 
     def update_values(self):
+        #Update values after a given time interval in ms
+        interval = 10
 
-        #Call this function again after 10ms
-        self.after(10, self.update_values)
+        self.inventory.config(text='Inventory: ' + TelemetryData.getInventory)
+        self.after(interval, self.update_values)
         
 if __name__ == '__main__':
-    data = TelemetryData()
     app = TelemetryUI()
     app.mainloop()

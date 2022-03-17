@@ -10,4 +10,8 @@ class TelemetryData():
 
     def getErrorState(self):
         return self.ErrorState    
+    
+    def updateValues(self):
+        #TODO - Will eventually be used to update inventory and error state values using data from unit
+        pass
 
