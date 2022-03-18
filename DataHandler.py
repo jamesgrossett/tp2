@@ -5,11 +5,17 @@ class TelemetryData():
         self.Inventory = 0
         self.ErrorState = False
 
+    def increase(self):
+        self.Inventory + 1
+    
+    def decrease(self):
+        self.Inventory - 1
+
     def getInventory(self):
-        return self.Inventory
+        return int(self.Inventory)
 
     def getErrorState(self):
-        return self.ErrorState    
+        return bool(self.ErrorState) 
     
     def updateValues(self):
         #TODO - Will eventually be used to update inventory and error state values using data from unit
