@@ -6,10 +6,10 @@ class TelemetryData():
         self.ErrorState = False
 
     def increase(self):
-        self.Inventory + 1
+        self.Inventory += 1
     
     def decrease(self):
-        self.Inventory - 1
+        self.Inventory -= 1
 
     def getInventory(self):
         return int(self.Inventory)
