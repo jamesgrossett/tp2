@@ -18,6 +18,7 @@ class TelemetryUI(tk.Tk):
         self.fgcolour = 'blue'
         self.textstyle = ('Calibri', 25)
         self.configure(bg=self.bgcolour)
+        self.title('Telemetry Display')
         self.geometry("600x250")
 
         #Initialise telemetry data class
