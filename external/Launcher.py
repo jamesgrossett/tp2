@@ -2,11 +2,11 @@ from random import randint
 import tkinter as tk
 
 import time
-from ConnectionManager import ConnectionManager
+from Listener import Listener
 
 import DataHandler
 from DataHandler import TelemetryData
-from ConnectionManager import ConnectionManager
+from Listener import Listener
 
 
 class TelemetryUI(tk.Tk):
@@ -23,7 +23,7 @@ class TelemetryUI(tk.Tk):
 
         #Initialise telemetry data class
         self.data = TelemetryData()
-        self.connection = ConnectionManager()
+        self.connection = Listener()
 
         #Default choice for communcation method
         self.connectionVariable = tk.StringVar(self)
@@ -65,14 +65,14 @@ class TelemetryUI(tk.Tk):
         interval = 10
         
         #Update inventory value
-        self.inventoryValue.config(text=str(self.data.getInventory()))
+        self.inventoryValue.config(text=str(self.connection.updateInventory()))
         if (self.data.getInventory() > 0):
             self.inventoryValue.config(fg='green')
         else:
             self.inventoryValue.config(fg='red')
 
         #Update Error State
-        self.errorState.config(text=str(self.data.getErrorState()))
+        self.errorState.config(text=str(self.connection.updateErrorState()))
         if (self.data.getErrorState()):
             self.errorState.config(fg='red')
         else:
