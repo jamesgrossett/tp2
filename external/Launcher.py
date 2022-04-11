@@ -2,11 +2,11 @@ from random import randint
 import tkinter as tk
 
 import time
-from Listener import Listener
+from UDPListener import Listener
 
 import DataHandler
 from DataHandler import TelemetryData
-from Listener import Listener
+from UDPListener import Listener
 
 
 class TelemetryUI(tk.Tk):
@@ -40,8 +40,8 @@ class TelemetryUI(tk.Tk):
         self.connectionMethod.config(bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
         self.bluetoothLabel = tk.Label(self, text='Bluetooth: ', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
         self.wifiLabel = tk.Label(self, text='WiFi: ', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
-        self.bluetoothStatus = tk.Label(self, text=self.connection.getBluetoothStatus(), bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
-        self.wifiStatus = tk.Label(self, text=self.connection.getWifiStatus(), bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
+        self.bluetoothStatus = tk.Label(self, text='PLACEHOLDER', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
+        self.wifiStatus = tk.Label(self, text='PLACEHOLDER', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
         dropDown = self.nametowidget(self.connectionMethod.menuname)
         dropDown.config(bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
         
@@ -62,18 +62,24 @@ class TelemetryUI(tk.Tk):
 
     def update_values(self):
         #Update values after a given time interval in ms
-        interval = 10
+        interval = 1000
+
+        #Recieve new data via UDP connection
+        inventory = self.connection.recieve()
+        bluetoothStatus = False
+        wifiStatus = True
+        errorState = False
         
         #Update inventory value
-        self.inventoryValue.config(text=str(self.connection.updateInventory()))
-        if (self.data.getInventory() > 0):
+        self.inventoryValue.config(text=str(inventory))
+        if (inventory > 0):
             self.inventoryValue.config(fg='green')
         else:
             self.inventoryValue.config(fg='red')
 
         #Update Error State
-        self.errorState.config(text=str(self.connection.updateErrorState()))
-        if (self.data.getErrorState()):
+        self.errorState.config(text=str(errorState))
+        if (errorState):
             self.errorState.config(fg='red')
         else:
             self.errorState.config(fg='green')
@@ -81,14 +87,14 @@ class TelemetryUI(tk.Tk):
         self.after(interval, self.update_values)
 
         #Update bluetooth and wifi status indicators
-        self.bluetoothStatus.config(text=str(self.connection.getBluetoothStatus()))
-        if (self.connection.getBluetoothStatus()):
+        self.bluetoothStatus.config(text=str(bluetoothStatus))
+        if (bluetoothStatus):
             self.bluetoothStatus.config(fg='green')
         else:
             self.bluetoothStatus.config(fg='red')
 
-        self.wifiStatus.config(text=str(self.connection.getWifiStatus()))
-        if (self.connection.getWifiStatus()):
+        self.wifiStatus.config(text=str(wifiStatus))
+        if (wifiStatus):
             self.wifiStatus.config(fg='green')
         else:
             self.wifiStatus.config(fg='red')
