@@ -1,7 +1,7 @@
 import redis
 import time
 
-HOST = '' #IP address of rasberry pi
+HOST = '10.0.0.100' #IP address of rasberry pi
 PORT = 6379
 
 class Listener():
