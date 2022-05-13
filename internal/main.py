@@ -1,14 +1,20 @@
 from GPIOhandler import GPIOHandler
+from UDPTalker import Talker
 import time
 
 if __name__ == '__main__':
     gpio = GPIOHandler()
+    talker = Talker()
     state = 'waiting'
+    
+    #Initialise and send inventory value
     inventory = 5
+    talker.send_keyvalue(1, inventory)
 
     while True:
-        #Things done in every state go here 
-        
+        #Things done in every state go here
+        # Send new inventory value to telemetry device 
+        talker.send_keyvalue(1, inventory)
         #Waiting for user to place their hand
         if state == 'waiting':
             #Display inventory value
