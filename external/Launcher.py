@@ -5,7 +5,6 @@ import socket
 import time
 from turtle import bgcolor
 from UDPListener import Listener
-import DataHandler
 from DataHandler import TelemetryData
 from UDPListener import Listener
 

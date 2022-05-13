@@ -9,7 +9,7 @@ from struct import pack
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 #host, port = '10.0.0.52', 65000 #Home address
-host, port = '10.89.209.82', 65000 #UQ address
+host, port = '10.89.210.83', 65000 #UQ address
 server_address = (host, port)
 
 # Send message every 1 second

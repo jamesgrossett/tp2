@@ -3,8 +3,8 @@ import sys
 from struct import unpack, pack
 
 #UDP server address and port
-HOST, PORT = '10.0.0.52', 65000 #Home address
-#HOST, PORT = '10.89.209.82', 65000 #UQ Address?
+#HOST, PORT = '10.0.0.52', 65000 #Home address
+HOST, PORT = '10.89.210.83', 65000 #UQ Address
 
 class Listener():
     def __init__(self):

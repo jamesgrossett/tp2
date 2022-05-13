@@ -11,8 +11,13 @@ if __name__ == '__main__':
         
         #Waiting for user to place their hand
         if state == 'waiting':
+            #Display inventory value
             gpio.update_seven_seg(inventory)
+
+            #Clear all LEDs
             gpio.clear_leds()
+
+            #Check if empty
             if (inventory == 0):
                 state = 'empty'
             if (gpio.read_hand_sensor()):
@@ -20,21 +25,30 @@ if __name__ == '__main__':
         
         #Dispensing mask
         elif state == 'dispensing':
+            #Clear seven seg due to no looping
+            gpio.clear_seven_seg()
+
+            #Turn on dispensing led and rotate dispensor stepper 1 rotation
             gpio.update_led('dispensing', 1)
             gpio.rotate_stepper1()
-            gpio.update_led('dispensing', 0)
+            #CHECK FOR ERROR DISPENSING HERE
+
+            #Adjust inventory and return to waiting
             inventory-=1
             state = 'waiting'
         
         #No inventory to dispense
         elif state == 'empty' and inventory == 0:
-            if (gpio.read_hand_sensor):
-                gpio.update_led('empty', 1)
-                time.sleep(3)
-                gpio.update_led('empty', 0)
+            #Display 0 on seven seg and enable empty led
+            gpio.update_seven_seg()
+            gpio.update_led('empty', 1)
 
-                #Refresh inventory, go to waiting
-                inventory+=5
-                state = 'waiting'
+        #This indicates reload has occurred and inventory has been updated from telemetry unit
+        elif state == 'empty' and inventory > 0:
+            state = 'waiting'
+        
+        #Error dispensing mask detected
+        elif state == 'error':
+            gpio.update_led('error', 1)
 
 
