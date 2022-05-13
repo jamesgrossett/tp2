@@ -1,6 +1,6 @@
 import socket
 
-BTaddress = '0C:96:E6:B5:0F:BC' #Laptop bluetooth MAC address
+BTaddress = '0c:96:e6:b5:0f:bc' #Laptop bluetooth MAC address
 port = 3
 
 
