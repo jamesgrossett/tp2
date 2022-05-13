@@ -1,7 +1,8 @@
 import socket
+from struct import pack, unpack
 
-BTaddress = '0C:96:E6:B5:0F:BC' #Laptop bluetooth MAC address
-port = 3
+BTaddress = '0c:96:e6:b5:0f:bc' #Laptop bluetooth MAC address
+port = 5
 backlog = 1
 size = 1024
 
@@ -14,8 +15,9 @@ try:
     while 1:
         data = client.recv(size)
         if data:
-            print(data)
-            client.send(data)
+            key, value = unpack('2H', data)
+            print(key, value)
+            #client.send()
 except:
     print("Closing socket")
     client.close()
