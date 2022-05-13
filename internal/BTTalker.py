@@ -1,15 +1,19 @@
-import socket
+import bluetooth
+from struct import pack
 
-BTaddress = '0C:96:E6:B5:0F:BC' #Laptop bluetooth MAC address
-port = 3
+BTaddress = '0c:96:e6:b5:0f:bc' #Laptop bluetooth MAC address
+port = 5
 
 
-s = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+s = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 s.connect((BTaddress, port))
 
 while 1:
-    text = "WORKING"
-    s.send(text, 'UTF-8')
+    key = 1
+    value = 2
+    message = pack('2H', key, value)
+    s.send(message, 'UTF-8')
 
 #s.close
+
 
