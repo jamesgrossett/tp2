@@ -13,11 +13,9 @@ class BluetoothTalker():
 
     #Sends a key-value pair to the bluetooth host
     def send_keyvalue(self, key, value):
-        #Account for value cases where value is <10 (single digit). Ignoring cases where value is >99 because this should not ever occur in reality
+        #Account for value cases where value is <10 (single digit) by adding leading 0. Ignoring cases where value is >99 (triple digit) because this should not ever occur in reality
         if len(str(value)) == 1:
-            string_value = '0' + str(value)
-            value = int(string_value)
-        
+            value = '0' + str(value)
         
         message = format("%s%s" % (key, value))
         print("Sending: %s" % message)
