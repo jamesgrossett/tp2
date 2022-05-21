@@ -8,7 +8,7 @@ if __name__ == '__main__':
     state = 'waiting'
     
     #Initialise and send inventory value
-    inventory = 5
+    inventory = 25
     talker.send_keyvalue(1, inventory)
 
     while True:
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         #No inventory to dispense
         elif state == 'empty' and inventory == 0:
             #Display 0 on seven seg and enable empty led
-            gpio.update_seven_seg()
+            gpio.update_seven_seg(inventory)
             gpio.update_led('empty', 1)
 
         #This indicates reload has occurred and inventory has been updated from telemetry unit
@@ -56,5 +56,6 @@ if __name__ == '__main__':
         #Error dispensing mask detected
         elif state == 'error':
             gpio.update_led('error', 1)
+            #leave error state after intel from telemetry
 
 
