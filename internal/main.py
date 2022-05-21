@@ -1,20 +1,24 @@
 from GPIOhandler import GPIOHandler
 from UDPTalker import Talker
+from BTTalker import BluetoothTalker
 import time
 
 if __name__ == '__main__':
     gpio = GPIOHandler()
-    talker = Talker()
+    UDPtalker = Talker()
+    BTtalker = BluetoothTalker()
     state = 'waiting'
     
     #Initialise and send inventory value
-    inventory = 25
-    talker.send_keyvalue(1, inventory)
+    inventory = 14
+    UDPtalker.send_keyvalue(1, inventory)
 
     while True:
         #Things done in every state go here
-        # Send new inventory value to telemetry device 
-        talker.send_keyvalue(1, inventory)
+        # Send new inventory value to telemetry device over both udp and bluetooth
+        BTtalker.send_keyvalue(1, inventory)
+        UDPtalker.send_keyvalue(1, inventory)
+        
         #Waiting for user to place their hand
         if state == 'waiting':
             #Display inventory value
