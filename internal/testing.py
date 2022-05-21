@@ -1,7 +1,7 @@
-from GPIOhandler import GPIOHandler
-import time
-gpio = GPIOHandler()
-gpio.rotate_stepper1()
-gpio.clear_leds()
-gpio.clear_seven_seg()
-    
+from BTTalker import BluetoothTalker
+import random
+
+bt = BluetoothTalker()
+while (1):
+    bt.send_keyvalue(1, random.randint(1, 99))
+    bt.send_keyvalue(2, random.randint(0, 1))
