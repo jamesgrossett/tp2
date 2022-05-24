@@ -73,7 +73,7 @@ class GPIOHandler():
     def read_ir(self, id):
         for sensor in self.IRsensors:
             if sensor.id == id:
-                return sensor.read_sensor
+                return sensor.read_sensor()
     
     #Updates provided led in display
     def update_led(self, id, value):
