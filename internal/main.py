@@ -39,7 +39,7 @@ if __name__ == '__main__':
         #Waiting for user to place their hand with remaining inventory
         if state == 'waiting' and inventory > 0:
             #Display inventory value
-            gpio.update_seven_seg(inventory)
+            gpio.write_seven_seg(inventory)
 
             #Clear all LEDs
             gpio.clear_leds()
@@ -78,7 +78,7 @@ if __name__ == '__main__':
         #No inventory to dispense
         elif state == 'waiting' and inventory == 0:
             #Display 0 on seven seg and enable empty led
-            gpio.update_seven_seg(inventory)
+            gpio.write_seven_seg(inventory)
             gpio.update_led('empty', 1)
         
         #Error dispensing mask detected
