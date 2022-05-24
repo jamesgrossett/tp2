@@ -1,4 +1,4 @@
-from GPIOhandler import GPIOHandler
+from GPIOHandler import GPIOHandler
 from UDPTalker import Talker
 from BTTalker import BluetoothTalker
 import time

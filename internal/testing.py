@@ -1,4 +1,4 @@
-from GPIOhandler import GPIOHandler
+from GPIOHandler import GPIOHandler
 from gpiozero import Servo
 
 if __name__ == '__main__':
