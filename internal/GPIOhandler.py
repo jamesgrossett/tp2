@@ -66,16 +66,17 @@ class GPIOHandler():
     def write_seven_seg(self, value):
         self.seven_seg.update_seven_seg(value)
     
+    #Clear (blank) seven segment screen
     def clear_seven_seg(self):
         self.seven_seg.clear_seven_seg()
 
-    #Reads value currently output by hand sensor
+    #Reads value currently output by selected ir sensor
     def read_ir(self, id):
         for sensor in self.IRsensors:
             if sensor.id == id:
                 return sensor.read_sensor()
     
-    #Updates provided led in display
+    #Updates provided led in display to provided value
     def update_led(self, id, value):
         for led in self.LEDs:
             if led.id == id:
@@ -92,7 +93,7 @@ class GPIOHandler():
             if stepper.id == id:
                 stepper.rotate()
 
-    #Drive servo with a value from -1 to 1.
+    #Drive trapdoor servo with a value from -1 to 1.
     def write_servo(self, value):
         i = 0
         while (i < 2000):
