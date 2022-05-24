@@ -1,6 +1,7 @@
 from GPIOhandler import GPIOHandler
 from UDPTalker import Talker
 from BTTalker import BluetoothTalker
+import gpiozero
 import time
 
 if __name__ == '__main__':
@@ -13,8 +14,25 @@ if __name__ == '__main__':
     inventory = 14
     UDPtalker.send_keyvalue(1, inventory)
 
+    #Initialise key value pair to be 0 (invalid)
+    key = 0
+    value = 0
+
     while True:
         #Things done in every state go here
+        #Reset key value for each loop
+        key = 0
+        #Checks for incoming inventory values - indicated by key 3
+        try:
+            key, value = BTtalker.recieve_keyvalue()
+        except Exception as e:
+            print('Failed to recieve incoming key-value pair: ' + str(e))
+        
+        if (key == 3):
+            inventory = value
+        else:
+            pass
+
         # Send new inventory value to telemetry device over both udp and bluetooth
         BTtalker.send_keyvalue(1, inventory)
         UDPtalker.send_keyvalue(1, inventory)
@@ -41,6 +59,10 @@ if __name__ == '__main__':
             #Turn on dispensing led and rotate dispensor stepper 1 rotation
             gpio.update_led('dispensing', 1)
             gpio.rotate_stepper1()
+            time.sleep(2)
+            #Rotate roller two full rotations
+            gpio.rotate_stepper2()
+            gpio.rotate_stepper2()
             #CHECK FOR ERROR DISPENSING HERE
 
             #Adjust inventory and return to waiting

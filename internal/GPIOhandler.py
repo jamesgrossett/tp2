@@ -1,36 +1,51 @@
 import RPi.GPIO as GPIO
+from gpiozero import Servo
 import time
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 
-# GPIO ports for the 7seg pins - abcdefg
+# GPIO ports for the 7seg pins - abcdefg header order is d1d2 bafgedc
 segments =  (5,6,19,13,26,16,20)
 digits = (8,7)
-#sevens eg delay in seconds
+#sevens seg delay in seconds
 ssdelay = 1/120
 
 #GPIO ports for IR sensor output
-handsensor = 18
-#hand sensor ground is 6 and power is 4
+handsensor = 10
+errorsensor = 9
+
+#GPIO port for servo signal
+servopin = 12
 
 #GPIO ports for LED outputs
-errorled = 27
-dispensingled = 17
-emptyled = 22
+errorled = 22
+dispensingled = 23
+emptyled = 24
 
-#GPIO ports for ULN2003 stepper motor driver
-stepper1_1 = 2
+#GPIO ports for ULN2003 stepper motor driver - spring driver
+stepper1_1 = 2 
 stepper1_2 = 3
 stepper1_3 = 4
 stepper1_4 = 14
 stepper1_pins = [stepper1_1, stepper1_2, stepper1_3, stepper1_4]
+
+#GPIO ports for ULN2003 stepper motor driver - roller driver
+stepper2_1 = 15
+stepper2_2 = 18
+stepper2_3 = 17
+stepper2_4 = 27
+stepper2_pins = [stepper2_1, stepper2_2, stepper2_3, stepper2_4]
 
 #stepper motor parameters
 stepper_count = 4096*2
 
 stepper_sequence = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
 
+#Servo correction factors
+myCorrection=0.45
+maxPW=(2.0+myCorrection)/1000
+minPW=(1.0-myCorrection)/1000
 
 num = {'clr':[1,1,1,1,1,1,1],
     '0':[0,0,0,0,0,0,1],
@@ -66,8 +81,16 @@ class GPIOHandler():
         GPIO.setup(dispensingled, GPIO.OUT)
         GPIO.setup(emptyled, GPIO.OUT)
 
+        #Setup servo with gpiozero library
+        self.trapdoor_servo = Servo(servopin, min_pulse_width=minPW, max_pulse_width=maxPW)
+
         #Setup stepper motor outputs
         for pin in stepper1_pins:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, 0)
+        
+        #Setup stepper motor outputs
+        for pin in stepper2_pins:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, 0)
 
@@ -128,3 +151,19 @@ class GPIOHandler():
                     GPIO.output(stepper1_pins[i], step[i])
                     time.sleep(0.001)
                     Step1Counter+=1
+
+    def rotate_stepper2(self):
+        Step2Counter = 0
+        while(Step2Counter <= stepper_count):
+            #print("Rotating stepper two")
+            for step in stepper_sequence:
+                for i in range(len(stepper2_pins)):
+                    #print(Step1Counter)
+                    GPIO.output(stepper2_pins[i], step[i])
+                    time.sleep(0.001)
+                    Step2Counter+=1
+
+    #Value -1 to 1
+    def write_servo(self, value):
+        print(f'Writing servo to {value}')
+        self.trapdoor_servo.value = value

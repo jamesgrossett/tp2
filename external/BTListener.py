@@ -13,7 +13,7 @@ class BluetoothListener():
         print(f'Initialising Bluetooth host on mac address: {BTaddress} port {port}')
         self.sock.bind((BTaddress, port))
         self.sock.listen(backlog)
-        self.sock.settimeout(3)
+        #self.sock.settimeout(3)
         self.BTconnect()
 
     def BTconnect(self):
