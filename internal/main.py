@@ -9,13 +9,16 @@ if __name__ == '__main__':
     BTtalker = BluetoothTalker()
     state = 'waiting'
     
-    #Initialise and send inventory value
-    inventory = 14
+    #Initialise and send starting inventory value
+    inventory = 11
     UDPtalker.send_keyvalue(1, inventory)
 
     #Initialise key value pair to be 0 (invalid)
     key = 0
     value = 0
+
+    #Close trapdoor initially
+    gpio.write_servo(600)
 
     while True:
         #Things done in every state go here
@@ -38,14 +41,14 @@ if __name__ == '__main__':
         
         #Waiting for user to place their hand with remaining inventory
         if state == 'waiting' and inventory > 0:
+            #Send cleared error status to telemetry unit
+            BTtalker.send_keyvalue(2, 0)
+            
             #Display inventory value
             gpio.write_seven_seg(inventory)
 
             #Clear all LEDs
             gpio.clear_leds()
-            
-            #Close trapdoor
-            gpio.write_servo(-1)
             
             #Check if hand present
             if (gpio.read_ir('hand')):
@@ -60,22 +63,32 @@ if __name__ == '__main__':
             gpio.clear_seven_seg()
 
             #Open trapdoor
-            gpio.write_servo(0)
+            gpio.write_servo(1600)
 
             #Rotate coil stepper one rotation
             gpio.rotate_stepper('coil')
-            time.sleep(1)
+            time.sleep(0.25)
 
-            #Rotate roller stepper one rotation
-            gpio.rotate_stepper('roller')
-
-            #CHECK FOR ERROR DISPENSING HERE
-
-            #Adjust inventory and return to waiting
-            inventory-=1
-            state = 'waiting'
+            #Attempt to dispense mask 3 times
+            for attempt in range(3):
+                print(f'Dispensing attempt {attempt}')
+                gpio.rotate_stepper('roller')
+                #Check mask is present (ie successful dispension) after rolling one rotation
+                if (gpio.read_ir('error') == 1):
+                    #Adjust inventory and return to waiting upon successful dispension
+                    inventory-=1
+                    state = 'waiting'
+                    break
+                else:
+                    attempt+=1
+                
+                #If all attempts failed, indicate error
+                if attempt == 3:
+                    print('All attempts failed')
+                    inventory-=1
+                    state = 'error'
         
-        #No inventory to dispense
+        #No inventory to dispense - empty
         elif state == 'waiting' and inventory == 0:
             #Display 0 on seven seg and enable empty led
             gpio.write_seven_seg(inventory)
@@ -84,6 +97,9 @@ if __name__ == '__main__':
         #Error dispensing mask detected
         elif state == 'error':
             gpio.update_led('error', 1)
+
+            #Send error status to telemetry device
+            BTtalker.send_keyvalue(2, 1)          
 
             #Initialise key to be invalid (0)
             key = 0

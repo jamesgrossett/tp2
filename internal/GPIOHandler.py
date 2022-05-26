@@ -1,20 +1,25 @@
 import RPi.GPIO as GPIO
 from gpiozero import Servo
+from gpiozero.pins.pigpio import PiGPIOFactory
 from SevenSegment import SevenSegment
 from LED import LED
 from StepperMotor import StepperMotor
 from IRSensor import IRSensor
+import pigpio
 import time
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
+
+#Set PIGPIO as factory for servo pins
+factory = PiGPIOFactory()
 
 # GPIO ports for the 7seg pins - abcdefg header order is d1d2 bafgedc
 segments =  (5,6,19,13,26,16,20)
 digits = (8,7)
 
 #GPIO ports for IR sensor input
-hand_irpin = 10
-error_irpin = 9
+hand_irpin = 9
+error_irpin = 10
 
 #GPIO ports for LED outputs
 errorpin = 22
@@ -22,13 +27,17 @@ dispensingpin = 23
 emptypin = 24
 
 #GPIO ports for coil stepper motor driver in form (IN1, IN2, IN3, IN4)
-stepper1_pins = [2, 3, 4, 14]
+stepper2_pins = [2, 3, 4, 14]
 
 #GPIO ports for coil roller motor driver in form (IN1, IN2, IN3, IN4)
-stepper2_pins = [15, 18, 17, 27]
+stepper1_pins = [15, 18, 17, 27]
 
 #GPIO port for servo signal
-servopin = 12
+servopin = 21
+
+#pigpio servo pwm driver
+pwm = pigpio.pi() 
+pwm.set_mode(servopin, pigpio.OUTPUT)
 
 #Servo correction factors
 myCorrection=0.45
@@ -60,7 +69,7 @@ class GPIOHandler():
         self.stepper_motors = (self.coil_stepper, self.roller_stepper)
 
         #Initialise servo with gpiozero library
-        self.trapdoor_servo = Servo(servopin, min_pulse_width=minPW, max_pulse_width=maxPW)
+        #self.trapdoor_servo = Servo(servopin, min_pulse_width=minPW, max_pulse_width=maxPW)
     
     #Write value to seven segment display
     def write_seven_seg(self, value):
@@ -93,11 +102,7 @@ class GPIOHandler():
             if stepper.id == id:
                 stepper.rotate()
 
-    #Drive trapdoor servo with a value from -1 to 1.
+    #Drive trapdoor servo with a value from 600 (min) to 2500 (max) 
     def write_servo(self, value):
-        i = 0
-        while (i < 2000):
-            self.trapdoor_servo.value = value
-            i+=1
-
+        pwm.set_servo_pulsewidth(servopin, value)
     

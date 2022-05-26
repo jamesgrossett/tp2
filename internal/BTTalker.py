@@ -24,11 +24,11 @@ class BluetoothTalker():
             value = '0' + str(value)
         
         message = format("%s%s" % (key, value))
-        print("Sending: %s" % message)
+        #print("Sending: %s" % message)
         try:
             self.sock.send(bytes(message, 'UTF-8'))
-        except:
-            print('Message failed to send (Host down?)')
+        except Exception as e:
+            print(f'Failed to send key-value pair: {e}')
     
     def BTconnect(self):
         try: 
@@ -48,8 +48,10 @@ class BluetoothTalker():
                 key = int(data_decoded[0])
                 value = int(data_decoded[1] + data_decoded[2])
                 return key, value
-        except:
+        except socket.timeout:
             print("Failed to recieve data (timeout)")
+        except Exception as e:
+            print(f'Failed to recieve key-value pair: {e}')
 
     def attempt_connect(self, attempts):
         i = 0
