@@ -1,7 +1,17 @@
-from BTTalker import BluetoothTalker
-import random
+from GPIOHandler import GPIOHandler
+from gpiozero import Servo
 
-bt = BluetoothTalker()
-while (1):
-    bt.send_keyvalue(1, random.randint(1, 99))
-    bt.send_keyvalue(2, random.randint(0, 1))
+if __name__ == '__main__':
+    gpio = GPIOHandler()
+    i = 0
+    #while(1):
+        #gpio.write_servo(500)
+    while (1):
+        #servo = Servo(12)
+        #servo.max()
+        print(gpio.read_ir('error'))
+        #i+=1
+
+        #-1 is closed, 0 is open
+    
+
