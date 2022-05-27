@@ -29,10 +29,22 @@ class BluetoothListener():
         try:
             data = self.client.recv(size)
             if data:
-                print(f'Received {len(data)} bytes:')
                 data_decoded = data.decode('UTF-8')
+                print(f'Received {len(data)} bytes: {data_decoded}')
                 key = int(data_decoded[0])
                 value = int(data_decoded[1] + data_decoded[2])
                 return key, value
         except:
             print("Failed to recieve data (timeout)")
+    
+    def send_keyvalue(self, key, value):
+        #Account for value cases where value is <10 (single digit) by adding leading 0. Ignoring cases where value is >99 (triple digit) because this should not ever occur in reality
+        if len(str(value)) == 1:
+            value = '0' + str(value)
+        
+        message = format("%s%s" % (key, value))
+        print("Sending: %s" % message)
+        try:
+            self.client.send(bytes(message, 'UTF-8'))
+        except Exception as e:
+            print('Message failed to send: ' + str(e))

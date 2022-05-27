@@ -26,14 +26,12 @@ class TelemetryUI(tk.Frame):
         self.parent.geometry("600x250")
 
         #Initialise connection managers (UDP and BT)
-        self.UDPListener = Listener()
+        #self.UDPListener = Listener()
         self.BTListener = BluetoothListener()
 
         #Initialise variable values on startup
         self.inventory = 0
-        self.bluetoothState = False
-        self.wifiState= True
-        self.errorState = False
+        self.errorState = 0
 
         #Default choice for communcation method
         self.connectionVariable = tk.StringVar(self)
@@ -44,15 +42,16 @@ class TelemetryUI(tk.Frame):
         self.errorStateValue = tk.Label(self, text=self.errorState, bg=self.bgcolour, fg='red', font=self.textstyle)
         self.inventoryLabel = tk.Label(self, text='Inventory: ', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
         self.inventoryValue = tk.Label(self, text=self.inventory, bg=self.bgcolour, fg='red', font=self.textstyle)
-        self.bluetoothLabel = tk.Label(self, text='Bluetooth: ', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
-        self.wifiLabel = tk.Label(self, text='WiFi: ', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
-        self.bluetoothStatus = tk.Label(self, text=self.bluetoothState, bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
-        self.wifiStatus = tk.Label(self, text=self.wifiState, bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
+        #self.bluetoothLabel = tk.Label(self, text='Bluetooth: ', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
+        #self.wifiLabel = tk.Label(self, text='WiFi: ', bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
+        #self.bluetoothStatus = tk.Label(self, text=self.bluetoothState, bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
+        #self.wifiStatus = tk.Label(self, text=self.wifiState, bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
         
         #Tkinter buttons initiaised here
         self.inventoryAdjust = tk.Button(self, text='Adjust Inventory', command=self.adjust_inventory, bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
         self.bluetoothConnect = tk.Button(self, text = 'Connect', command=self.BTListener.BTconnect, bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)   
-        
+        self.errorClear = tk.Button(self, text = 'Clear Error', command=self.clear_error, bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
+
         #Tkinter drop down menus initialised here
         self.connectionMethod = tk.OptionMenu(self, self.connectionVariable, "Bluetooth", "WiFi")
         self.connectionMethod.config(bg=self.bgcolour, fg=self.fgcolour, font=self.textstyle)
@@ -65,12 +64,13 @@ class TelemetryUI(tk.Frame):
         self.errorLabel.grid(column=0, row=1)
         self.errorStateValue.grid(column=1, row=1)
         self.inventoryAdjust.grid(column=0, row=2, columnspan=2)
-        self.bluetoothLabel.grid(column=3, row=0)
-        self.wifiLabel.grid(column=3, row=1)
-        self.bluetoothStatus.grid(column=4, row=0)
-        self.wifiStatus.grid(column=4, row=1)
+        self.errorClear.grid(column=3, row=1)
+        #self.bluetoothLabel.grid(column=3, row=0)
+        #self.wifiLabel.grid(column=3, row=1)
+        #self.bluetoothStatus.grid(column=4, row=0)
+        #self.wifiStatus.grid(column=4, row=1)
         self.connectionMethod.grid(column=3, row=2, columnspan=2)
-        self.bluetoothConnect.grid(column=3, row=3)
+        self.bluetoothConnect.grid(column=3, row=0)
 
         #Update values constantly
         self.update_values()
@@ -116,19 +116,6 @@ class TelemetryUI(tk.Frame):
 
         self.after(interval, self.update_values)
 
-        #Update bluetooth and wifi status indicators
-        self.bluetoothStatus.config(text=str(self.bluetoothState))
-        if (self.bluetoothState):
-            self.bluetoothStatus.config(fg='green')
-        else:
-            self.bluetoothStatus.config(fg='red')
-
-        self.wifiStatus.config(text=str(self.wifiState))
-        if (self.wifiState):
-            self.wifiStatus.config(fg='green')
-        else:
-            self.wifiStatus.config(fg='red')
-
     #Defined seperate window for adjusting inventory
     def adjust_inventory(self):
         self.top = tk.Toplevel(self.parent)
@@ -141,6 +128,9 @@ class TelemetryUI(tk.Frame):
 
         adjustLabel.pack()
         self.inputbox.pack()
+
+
+        
         sendButton.pack()
     
     def send_inventory(self):
@@ -148,6 +138,7 @@ class TelemetryUI(tk.Frame):
         value = int(self.inputbox.get("1.0", 'end-1c'))
         #Sends inventory data to rasberry pi
         #self.connection.send_keyvalue(3, value)
+        self.BTListener.send_keyvalue(3, value)
         self.top.destroy()
     
     #Interprets key-value pair and performs relevant operations
@@ -156,10 +147,15 @@ class TelemetryUI(tk.Frame):
             self.inventory = value
         elif key == 2: #Key of 2 indicates error status
             self.errorState = value
-        elif key == 3: #Key of 3 indicates outbound inventory and should be ignored
-            print(value)
+        elif key == 3: #Key of 3 indicates outbound inventory 
+            pass
         else:
             print(f'Invalid key: {key}')
+    
+    #Clears error state of machine
+    def clear_error(self):
+        #Key of 4 indicates clear error, value of 1 for true
+        self.BTListener.send_keyvalue(4, 1)
 
         
 if __name__ == '__main__':
