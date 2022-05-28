@@ -58,7 +58,7 @@ class GPIOHandler():
         #Initialise LEDs
         self.errorled = LED('error', errorpin)
         self.dispensingled = LED('dispensing', dispensingpin)
-        self.emptyled = LED('empty', dispensingpin)
+        self.emptyled = LED('empty', emptypin)
 
         self.LEDs = (self.errorled, self.dispensingled, self.emptyled)
 
